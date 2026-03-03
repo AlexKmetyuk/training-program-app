@@ -14,7 +14,7 @@ const store = useProgressStore()
 const pageRef = ref(null)
 
 const weekId = computed(() => parseInt(route.params.id) || 1)
-const week = computed(() => getWeek(weekId.value))
+const week = computed(() => getWeek(store.getContentWeekId(weekId.value)))
 
 const pos = store.currentPosition
 const isCurrentWeek = computed(() => pos.week === weekId.value)
@@ -26,6 +26,8 @@ const todayDayName = computed(() => isCurrentWeek.value ? (dayMap[pos.dayOfWeek]
 function shouldOpen(workout) {
   return isCurrentWeek.value && todayDayName.value === workout.day
 }
+
+const recommendation = computed(() => store.getRecommendation(weekId.value))
 
 watch(weekId, async () => {
   await nextTick()
@@ -39,7 +41,7 @@ function goPrevWeek() {
 }
 
 function goNextWeek() {
-  if (weekId.value < 48) {
+  if (weekId.value < store.totalWeeks) {
     router.push(`/week/${weekId.value + 1}`)
   }
 }
@@ -58,18 +60,28 @@ useSwipe(pageRef, { onLeft: goNextWeek, onRight: goPrevWeek })
         <h2 class="month-title-text">Тиждень {{ weekId }} — {{ week.name }}</h2>
         <span class="month-title-pct">RPE {{ week.rpeTarget }} · {{ store.weekProgress(weekId) }}%</span>
       </div>
-      <button class="month-nav-btn" :disabled="weekId >= 48" @click="goNextWeek">
+      <button class="month-nav-btn" :disabled="weekId >= store.totalWeeks" @click="goNextWeek">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
       </button>
     </div>
 
-    <div class="week-phase-badge" :style="{ background: week.phaseColor + '20', color: week.phaseColor }">
-      {{ week.phaseName }}
+    <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 12px;">
+      <div class="week-phase-badge" :style="{ background: week.phaseColor + '20', color: week.phaseColor }">
+        {{ week.phaseName }}
+      </div>
+      <div v-if="store.isRepeatWeek(weekId)" class="week-repeat-badge">
+        ПОВТОР
+      </div>
     </div>
 
     <ProgressBar :value="store.weekProgress(weekId)" :color="week.phaseColor" large style="margin-bottom: 16px;" />
 
     <div v-if="week.note" class="week-note">{{ week.note }}</div>
+
+    <!-- Recommendation banner -->
+    <div v-if="recommendation" :class="['week-recommendation', `week-recommendation--${recommendation.type}`]">
+      {{ recommendation.text }}
+    </div>
 
     <!-- Workouts -->
     <template v-for="workout in week.workouts" :key="`${weekId}-${workout.id}`">
@@ -77,6 +89,7 @@ useSwipe(pageRef, { onLeft: goNextWeek, onRight: goPrevWeek })
         v-if="workout.type === 'pool'"
         :workout="workout"
         :pool-key="`week-${weekId}-pool`"
+        :week-id="weekId"
         :initial-open="isCurrentWeek && pos.dayOfWeek === 7"
       />
       <WorkoutCard
@@ -99,6 +112,5 @@ useSwipe(pageRef, { onLeft: goNextWeek, onRight: goPrevWeek })
   border-radius: 8px;
   font-size: 0.8rem;
   font-weight: 600;
-  margin-bottom: 12px;
 }
 </style>

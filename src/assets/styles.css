@@ -429,6 +429,55 @@ button {
   line-height: 1.5;
 }
 
+/* === Recommendation Banner === */
+.week-recommendation {
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  padding: 10px 14px;
+  background: var(--warning-dim);
+  border-left: 4px solid var(--warning);
+  border-radius: var(--radius-sm);
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+
+.week-recommendation--danger {
+  background: var(--danger-dim);
+  border-left-color: var(--danger);
+}
+
+/* === Repeat Week Badge === */
+.week-repeat-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  background: var(--warning-dim);
+  color: var(--warning);
+}
+
+.week-repeat-badge--inline {
+  padding: 1px 6px;
+  font-size: 0.6rem;
+  border-radius: 4px;
+  vertical-align: middle;
+}
+
+/* === Skipped Week State === */
+.week-mini-card--skipped {
+  opacity: 0.5;
+  border-color: var(--warning);
+}
+
+.week-skipped-label {
+  color: var(--warning);
+  font-weight: 700;
+  font-size: 0.7rem;
+  letter-spacing: 0.3px;
+}
+
 /* === Unified Workout Card (.wcard) === */
 .wcard {
   background: var(--wcard-dim, var(--accent-dim));
@@ -444,6 +493,47 @@ button {
 
 .wcard--done {
   opacity: 0.55;
+}
+
+.wcard--skipped {
+  opacity: 0.6;
+  border-color: var(--warning);
+  position: relative;
+}
+
+.wcard__skipped-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--warning);
+  background: var(--warning-dim);
+  padding: 2px 8px;
+  border-radius: 8px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.wcard__skip-btn {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 4px 10px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.wcard__skip-btn:active {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.wcard--skipped .wcard__skip-btn {
+  color: var(--warning);
+  border-color: var(--warning);
 }
 
 .wcard__main {

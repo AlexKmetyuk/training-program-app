@@ -8,7 +8,7 @@ const router = useRouter()
 const store = useProgressStore()
 
 const pos = store.currentPosition
-const currentWeek = getWeek(pos.week)
+const currentWeek = getWeek(store.getContentWeekId(pos.week))
 const currentPhase = phases.find(p => currentWeek && currentWeek.phase === p.id)
 
 function goToWeek(id) {
@@ -24,7 +24,7 @@ function goToCurrent() {
   <div>
     <div class="dashboard-hero">
       <div class="dashboard-hero__title">Програма тренувань</div>
-      <div class="dashboard-hero__sub">48 тижнів / 4 фази / Full Body 3x + басейн</div>
+      <div class="dashboard-hero__sub">{{ store.totalWeeks }} тижнів / 4 фази / Full Body 3x + басейн</div>
     </div>
 
     <div class="dashboard-stats">
@@ -33,7 +33,7 @@ function goToCurrent() {
         <div class="stat-card__label">Загальний прогрес</div>
       </div>
       <div class="stat-card">
-        <div class="stat-card__value">{{ pos.week }}/48</div>
+        <div class="stat-card__value">{{ pos.week }}/{{ store.totalWeeks }}</div>
         <div class="stat-card__label">Тиждень</div>
       </div>
       <div class="stat-card" v-if="currentPhase">

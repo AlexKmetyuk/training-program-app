@@ -12,6 +12,14 @@ const props = defineProps({
 const store = useProgressStore()
 const open = ref(props.initialOpen)
 
+const skipKey = computed(() => `week-${props.weekId}-workout-${props.workout.id}`)
+const workoutSkipped = computed(() => store.isSkipped(skipKey.value))
+
+const workoutDateStr = computed(() => {
+  const date = store.getWorkoutDate(props.weekId, props.workout.day)
+  return store.formatDate(date)
+})
+
 const progress = computed(() => {
   const exercises = props.workout.exercises || []
   if (exercises.length === 0) return { done: 0, total: 0, pct: 0 }
@@ -42,23 +50,27 @@ const dayIcons = {
 </script>
 
 <template>
-  <div :class="['wcard', { 'wcard--open': open, 'wcard--done': isDone }]" style="--wcard-color: var(--accent); --wcard-dim: var(--accent-dim);">
-    <div class="wcard__main" @click="open = !open">
+  <div :class="['wcard', { 'wcard--open': open, 'wcard--done': isDone, 'wcard--skipped': workoutSkipped }]" style="--wcard-color: var(--accent); --wcard-dim: var(--accent-dim);">
+    <div class="wcard__main" @click="!workoutSkipped && (open = !open)">
       <div class="wcard__icon">{{ dayIcons[workout.day] || '🏋️' }}</div>
       <div class="wcard__info">
-        <div class="wcard__day">{{ dayShort[workout.day] || workout.day }}</div>
+        <div class="wcard__day">{{ dayShort[workout.day] || workout.day }}, {{ workoutDateStr }}</div>
         <div class="wcard__name">{{ workout.name }}</div>
         <div class="wcard__meta">{{ workout.duration || '' }}</div>
       </div>
       <div class="wcard__status">
-        <span v-if="isDone" class="wcard__done-badge">
+        <span v-if="workoutSkipped" class="wcard__skipped-badge">ПРОПУЩЕНО</span>
+        <span v-else-if="isDone" class="wcard__done-badge">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
         </span>
         <span v-else-if="progress.done > 0" class="wcard__count">{{ progress.done }}/{{ progress.total }}</span>
       </div>
-      <svg :class="['wcard__chevron', { 'wcard__chevron--open': open }]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6" /></svg>
+      <button v-if="!isDone" class="wcard__skip-btn" @click.stop="store.toggleSkip(skipKey)">
+        {{ workoutSkipped ? 'Повернути' : 'Пропустити' }}
+      </button>
+      <svg v-if="!workoutSkipped" :class="['wcard__chevron', { 'wcard__chevron--open': open }]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6" /></svg>
     </div>
-    <div v-if="open" class="wcard__body">
+    <div v-if="open && !workoutSkipped" class="wcard__body">
       <div v-if="progress.total > 0" class="wcard__progress-bar">
         <div class="wcard__progress-fill" :style="{ width: progress.pct + '%' }"></div>
       </div>

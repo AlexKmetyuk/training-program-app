@@ -1,8 +1,8 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useProgressStore } from '../stores/progress.js'
 import { useRouter, useRoute } from 'vue-router'
-import { phases, getPhaseWeeks } from '../data/program.js'
+import { phases, getWeek } from '../data/program.js'
 import ProgressBar from './ProgressBar.vue'
 
 const emit = defineEmits(['close'])
@@ -13,12 +13,39 @@ const route = useRoute()
 const openPhases = ref({ [currentPhaseId()]: true })
 
 function currentPhaseId() {
+  let weekId
   if (route.name === 'week') {
-    const weekId = parseInt(route.params.id) || 1
-    return Math.ceil(weekId / 12)
+    weekId = parseInt(route.params.id) || 1
+  } else {
+    weekId = store.currentPosition.week
   }
-  return Math.ceil(store.currentPosition.week / 12)
+  const contentId = store.getContentWeekId(weekId)
+  const w = getWeek(contentId)
+  return w ? w.phase : Math.ceil(contentId / 12)
 }
+
+// Build calendar weeks grouped by content phase
+const phaseCalendarWeeks = computed(() => {
+  const groups = phases.map(p => ({ phase: p, weeks: [] }))
+
+  for (let calId = 1; calId <= store.totalWeeks; calId++) {
+    const contentId = store.getContentWeekId(calId)
+    const contentWeek = getWeek(contentId)
+    if (!contentWeek) continue
+
+    const phaseGroup = groups.find(g => g.phase.id === contentWeek.phase)
+    if (phaseGroup) {
+      phaseGroup.weeks.push({
+        calendarId: calId,
+        contentWeek,
+        isRepeat: store.isRepeatWeek(calId),
+        isSkipped: store.isFullySkipped(calId),
+      })
+    }
+  }
+
+  return groups
+})
 
 function togglePhase(id) {
   openPhases.value[id] = !openPhases.value[id]
@@ -36,31 +63,34 @@ function isActive(weekId) {
 
 <template>
   <div class="phase-week-selector">
-    <div v-for="phase in phases" :key="phase.id" class="pws-phase">
-      <div class="pws-phase__header" @click="togglePhase(phase.id)">
-        <span class="pws-phase__dot" :style="{ background: phase.color }"></span>
-        <span class="pws-phase__name">{{ phase.name }}</span>
-        <span class="pws-phase__pct">{{ store.phaseProgress(phase.id) }}%</span>
+    <div v-for="group in phaseCalendarWeeks" :key="group.phase.id" class="pws-phase">
+      <div class="pws-phase__header" @click="togglePhase(group.phase.id)">
+        <span class="pws-phase__dot" :style="{ background: group.phase.color }"></span>
+        <span class="pws-phase__name">{{ group.phase.name }}</span>
+        <span class="pws-phase__pct">{{ store.phaseProgress(group.phase.id) }}%</span>
         <svg
-          :class="['pws-phase__chevron', { 'pws-phase__chevron--open': openPhases[phase.id] }]"
+          :class="['pws-phase__chevron', { 'pws-phase__chevron--open': openPhases[group.phase.id] }]"
           width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
           stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
         ><polyline points="6 9 12 15 18 9"/></svg>
       </div>
 
-      <ul v-if="openPhases[phase.id]" class="pws-week-list">
+      <ul v-if="openPhases[group.phase.id]" class="pws-week-list">
         <li
-          v-for="week in getPhaseWeeks(phase.id)"
-          :key="week.id"
-          :class="['pws-week', { 'pws-week--active': isActive(week.id) }]"
-          @click="select(week.id)"
+          v-for="item in group.weeks"
+          :key="item.calendarId"
+          :class="['pws-week', { 'pws-week--active': isActive(item.calendarId), 'pws-week--skipped': item.isSkipped }]"
+          @click="select(item.calendarId)"
         >
-          <span class="pws-week__num" :style="{ color: phase.color }">{{ week.id }}</span>
+          <span class="pws-week__num" :style="{ color: group.phase.color }">{{ item.calendarId }}</span>
           <div class="pws-week__info">
-            <div class="pws-week__name">{{ week.name }}</div>
+            <div class="pws-week__name">
+              {{ item.contentWeek.name }}
+              <span v-if="item.isRepeat" class="week-repeat-badge week-repeat-badge--inline">ПОВТОР</span>
+            </div>
           </div>
           <div class="pws-week__progress" style="width: 40px;">
-            <ProgressBar :value="store.weekProgress(week.id)" :color="phase.color" />
+            <ProgressBar :value="store.weekProgress(item.calendarId)" :color="group.phase.color" />
           </div>
         </li>
       </ul>
@@ -139,5 +169,11 @@ function isActive(weekId) {
 }
 .pws-week__name {
   font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.pws-week--skipped {
+  opacity: 0.5;
 }
 </style>
