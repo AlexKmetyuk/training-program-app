@@ -86,14 +86,14 @@ useSwipe(pageRef, { onLeft: goNextWeek, onRight: goPrevWeek })
     <!-- Workouts -->
     <template v-for="workout in week.workouts" :key="`${weekId}-${workout.id}`">
       <PoolCard
-        v-if="workout.type === 'pool'"
+        v-if="workout.type === 'pool' && store.settings.poolEnabled"
         :workout="workout"
         :pool-key="`week-${weekId}-pool`"
         :week-id="weekId"
         :initial-open="isCurrentWeek && pos.dayOfWeek === 7"
       />
       <WorkoutCard
-        v-else
+        v-else-if="workout.type !== 'pool'"
         :workout="workout"
         :week-id="weekId"
         :initial-open="shouldOpen(workout)"

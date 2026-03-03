@@ -14,6 +14,9 @@ export const useProgressStore = defineStore('progress', () => {
   const savedRepeat = localStorage.getItem('training-repeat-weeks')
   const repeatWeeks = ref(savedRepeat ? JSON.parse(savedRepeat) : [])
 
+  const savedSettings = localStorage.getItem('training-settings')
+  const settings = ref(savedSettings ? JSON.parse(savedSettings) : { poolEnabled: true })
+
   // --- Migration: month-based keys → week-based keys ---
   if (!localStorage.getItem('progress-migrated-v2')) {
     const old = { ...completed.value }
@@ -50,6 +53,10 @@ export const useProgressStore = defineStore('progress', () => {
 
   watch(repeatWeeks, (val) => {
     localStorage.setItem('training-repeat-weeks', JSON.stringify(val))
+  }, { deep: true })
+
+  watch(settings, (val) => {
+    localStorage.setItem('training-settings', JSON.stringify(val))
   }, { deep: true })
 
   // --- Repeat weeks logic ---
@@ -105,7 +112,7 @@ export const useProgressStore = defineStore('progress', () => {
     return { week, dayOfWeek }
   })
 
-  // Progress for a single calendar week (uses content mapping)
+  // Progress for a single calendar week — pool excluded from progress
   function weekProgress(weekId) {
     const contentId = getContentWeekId(weekId)
     const week = weeks[contentId - 1]
@@ -116,10 +123,8 @@ export const useProgressStore = defineStore('progress', () => {
     let done = 0
 
     for (const workout of week.workouts) {
-      if (workout.type === 'pool') {
-        total++
-        if (completed.value[`${prefix}pool`]) done++
-      } else if (workout.exercises) {
+      if (workout.type === 'pool') continue
+      if (workout.exercises) {
         for (const ex of workout.exercises) {
           total++
           if (completed.value[`${prefix}workout-${workout.id}-exercise-${ex.id}`]) done++
@@ -129,7 +134,7 @@ export const useProgressStore = defineStore('progress', () => {
     return total === 0 ? 0 : Math.round((done / total) * 100)
   }
 
-  // Progress for a phase — iterates calendar weeks 1..totalWeeks, groups by content phase
+  // Progress for a phase — pool excluded
   function phaseProgress(phaseId) {
     let total = 0
     let done = 0
@@ -141,10 +146,8 @@ export const useProgressStore = defineStore('progress', () => {
 
       const prefix = `week-${wId}-`
       for (const workout of week.workouts) {
-        if (workout.type === 'pool') {
-          total++
-          if (completed.value[`${prefix}pool`]) done++
-        } else if (workout.exercises) {
+        if (workout.type === 'pool') continue
+        if (workout.exercises) {
           for (const ex of workout.exercises) {
             total++
             if (completed.value[`${prefix}workout-${workout.id}-exercise-${ex.id}`]) done++
@@ -155,7 +158,7 @@ export const useProgressStore = defineStore('progress', () => {
     return total === 0 ? 0 : Math.round((done / total) * 100)
   }
 
-  // Total progress across all calendar weeks
+  // Total progress — pool excluded
   const totalProgress = computed(() => {
     let total = 0
     let done = 0
@@ -165,10 +168,8 @@ export const useProgressStore = defineStore('progress', () => {
       if (!week) continue
       const prefix = `week-${wId}-`
       for (const workout of week.workouts) {
-        if (workout.type === 'pool') {
-          total++
-          if (completed.value[`${prefix}pool`]) done++
-        } else if (workout.exercises) {
+        if (workout.type === 'pool') continue
+        if (workout.exercises) {
           for (const ex of workout.exercises) {
             total++
             if (completed.value[`${prefix}workout-${workout.id}-exercise-${ex.id}`]) done++
@@ -303,6 +304,7 @@ export const useProgressStore = defineStore('progress', () => {
       completed: { ...completed.value },
       skipped: { ...skipped.value },
       repeatWeeks: [...repeatWeeks.value],
+      settings: { ...settings.value },
     }
   }
 
@@ -320,6 +322,10 @@ export const useProgressStore = defineStore('progress', () => {
       repeatWeeks.value = [...data.repeatWeeks]
       localStorage.setItem('training-repeat-weeks', JSON.stringify(repeatWeeks.value))
     }
+    if (data.settings && typeof data.settings === 'object') {
+      settings.value = { ...settings.value, ...data.settings }
+      localStorage.setItem('training-settings', JSON.stringify(settings.value))
+    }
   }
 
   return {
@@ -327,6 +333,7 @@ export const useProgressStore = defineStore('progress', () => {
     completed,
     skipped,
     repeatWeeks,
+    settings,
     totalWeeks,
     toggle,
     isCompleted,

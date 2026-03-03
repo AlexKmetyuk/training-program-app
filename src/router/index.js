@@ -2,11 +2,13 @@ import { createRouter, createWebHistory } from 'vue-router'
 import DashboardView from '../views/DashboardView.vue'
 import WeeksView from '../views/WeeksView.vue'
 import WeekView from '../views/WeekView.vue'
+import SettingsView from '../views/SettingsView.vue'
 
 const routes = [
   { path: '/', name: 'dashboard', component: DashboardView },
   { path: '/weeks', name: 'weeks', component: WeeksView },
   { path: '/week/:id', name: 'week', component: WeekView, props: true },
+  { path: '/settings', name: 'settings', component: SettingsView },
 
   // Legacy redirects
   { path: '/months', redirect: '/weeks' },
