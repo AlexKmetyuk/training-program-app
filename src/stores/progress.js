@@ -3,7 +3,7 @@ import { ref, computed, watch } from 'vue'
 import { weeks } from '../data/program.js'
 
 export const useProgressStore = defineStore('progress', () => {
-  const startDate = ref('2026-03-02')
+  const startDate = ref('2026-03-09')
 
   const saved = localStorage.getItem('training-progress')
   const completed = ref(saved ? JSON.parse(saved) : {})
@@ -16,6 +16,9 @@ export const useProgressStore = defineStore('progress', () => {
 
   const savedSettings = localStorage.getItem('training-settings')
   const settings = ref(savedSettings ? JSON.parse(savedSettings) : { poolEnabled: true })
+
+  const savedTestResults = localStorage.getItem('training-test-results')
+  const testResults = ref(savedTestResults ? JSON.parse(savedTestResults) : {})
 
   // --- Migration: month-based keys → week-based keys ---
   if (!localStorage.getItem('progress-migrated-v2')) {
@@ -57,6 +60,10 @@ export const useProgressStore = defineStore('progress', () => {
 
   watch(settings, (val) => {
     localStorage.setItem('training-settings', JSON.stringify(val))
+  }, { deep: true })
+
+  watch(testResults, (val) => {
+    localStorage.setItem('training-test-results', JSON.stringify(val))
   }, { deep: true })
 
   // --- Repeat weeks logic ---
@@ -295,6 +302,10 @@ export const useProgressStore = defineStore('progress', () => {
     return { type: skipCount >= gymCount ? 'danger' : 'warning', text }
   }
 
+  function saveTestResult(key, data) {
+    testResults.value[key] = data
+  }
+
   function exportData() {
     return {
       version: 2,
@@ -305,6 +316,7 @@ export const useProgressStore = defineStore('progress', () => {
       skipped: { ...skipped.value },
       repeatWeeks: [...repeatWeeks.value],
       settings: { ...settings.value },
+      testResults: { ...testResults.value },
     }
   }
 
@@ -326,6 +338,10 @@ export const useProgressStore = defineStore('progress', () => {
       settings.value = { ...settings.value, ...data.settings }
       localStorage.setItem('training-settings', JSON.stringify(settings.value))
     }
+    if (data.testResults && typeof data.testResults === 'object') {
+      testResults.value = { ...data.testResults }
+      localStorage.setItem('training-test-results', JSON.stringify(testResults.value))
+    }
   }
 
   return {
@@ -334,6 +350,7 @@ export const useProgressStore = defineStore('progress', () => {
     skipped,
     repeatWeeks,
     settings,
+    testResults,
     totalWeeks,
     toggle,
     isCompleted,
@@ -347,6 +364,7 @@ export const useProgressStore = defineStore('progress', () => {
     weekGymCount,
     weekSkipCount,
     getRecommendation,
+    saveTestResult,
     currentPosition,
     weekProgress,
     phaseProgress,

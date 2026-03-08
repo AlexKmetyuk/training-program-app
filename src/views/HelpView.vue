@@ -140,6 +140,69 @@ function filtered() {
       </div>
     </div>
 
+    <!-- Weight progression -->
+    <h3 class="help-section-title">Прогресія ваги</h3>
+
+    <div class="help-card">
+      <p class="help-text">Кожен місяць — 4 тижні. Підбирай вагу під цільовий RPE:</p>
+      <div class="help-list">
+        <div class="help-list__item"><strong>Т1 (RPE 7):</strong> Підбери вагу, з якою залишається 3 повторення в запасі. Запиши ваги.</div>
+        <div class="help-list__item"><strong>Т2 (RPE 8):</strong> Підбери вагу під RPE 8 (2 в запасі). Зазвичай +1-2.5 кг штанга.</div>
+        <div class="help-list__item"><strong>Т3 (RPE 9):</strong> Підбери вагу під RPE 9 (1 в запасі). Пік циклу — запиши ваги!</div>
+        <div class="help-list__item"><strong>Т4 (Deload):</strong> ~40% від ваги Т3. Легко, відновлення.</div>
+      </div>
+      <p class="help-text" style="margin-top: 8px;"><strong>Скільки додавати?</strong> Залежить від вправи: штанга зазвичай +2.5 кг, гантелі +1-2 кг, тренажери/ізоляція +1-2.5 кг. Головне — щоб останній підхід відповідав цільовому RPE.</p>
+      <p class="help-text" style="margin-top: 4px;">Якщо на Т3 фактичний RPE менший за 9 — наступний місяць почни Т1 з вищої ваги.</p>
+    </div>
+
+    <!-- Superset hints -->
+    <h3 class="help-section-title">Суперсети</h3>
+
+    <div class="help-card">
+      <p class="help-text">Деякі вправи позначені як <strong>можна в суперсеті</strong>. Це означає, що їх можна виконувати по черзі без відпочинку між ними — один підхід першої, потім одразу підхід другої, потім відпочинок.</p>
+      <p class="help-text" style="margin-top: 8px;">Суперсет <strong>не обов'язковий</strong> — це лише підказка для економії часу (10-15 хвилин). Пари підібрані так, щоб м'язи не перетиналися:</p>
+      <div class="help-list">
+        <div class="help-list__item"><strong>Пн/Пт:</strong> Махи в сторони + Підйом на носки (дельти + литки)</div>
+        <div class="help-list__item"><strong>Ср:</strong> Розгинання ніг + Тяга до обличчя (квадри + задні дельти)</div>
+        <div class="help-list__item"><strong>Ср:</strong> Тяга до обличчя + Згинання на біцепс (задні дельти + біцепс)</div>
+      </div>
+    </div>
+
+    <!-- Warmup protocols -->
+    <h3 class="help-section-title">Розминкові підходи</h3>
+
+    <div class="help-card">
+      <p class="help-text">Перед робочими підходами compound вправ потрібно розім'ятися. Натисни на блок розминки в тренуванні, щоб побачити розминкові підходи для кожної вправи.</p>
+      <p class="help-text" style="margin-top: 8px;"><strong>Відсотки — від робочої ваги.</strong> Наприклад, якщо присід сьогодні 80 кг:</p>
+      <div class="help-list">
+        <div class="help-list__item">Пустий гриф (20 кг) &times; 10</div>
+        <div class="help-list__item">40% = 32 кг &rarr; 30 кг &times; 8</div>
+        <div class="help-list__item">60% = 48 кг &rarr; 50 кг &times; 5</div>
+        <div class="help-list__item">80% = 64 кг &rarr; 65 кг &times; 3</div>
+        <div class="help-list__item"><strong>Робочі = 80 кг &times; 8</strong></div>
+      </div>
+      <p class="help-text" style="margin-top: 8px;">Округлюй до найближчих блінів. Ізоляційні вправи не потребують розминки — м'язи вже розігріті після compound.</p>
+    </div>
+
+    <!-- Test history -->
+    <h3 class="help-section-title">Історія тестів</h3>
+
+    <div class="help-card">
+      <p class="help-text">Тести проводяться кожні 3 місяці (тиждень 3 циклу) на трьох основних вправах:</p>
+      <div class="help-list">
+        <div class="help-list__item"><strong>Пн:</strong> Присід</div>
+        <div class="help-list__item"><strong>Ср:</strong> Станова тяга</div>
+        <div class="help-list__item"><strong>Пт:</strong> Жим лежачи</div>
+      </div>
+      <p class="help-text" style="margin-top: 8px;">Формат тесту змінюється з часом для більшої точності:</p>
+      <div class="help-list">
+        <div class="help-list__item"><strong>M3, M6:</strong> 3RM — оцінка через формулу Epley</div>
+        <div class="help-list__item"><strong>M9:</strong> 2RM — ближче до реального максимуму</div>
+        <div class="help-list__item"><strong>M12:</strong> 1RM — справжній максимум</div>
+      </div>
+      <p class="help-text" style="margin-top: 8px;">Результати записуються на сторінці <strong>Історія тестів</strong> (доступна з головної або бокової панелі).</p>
+    </div>
+
     <!-- Glossary -->
     <h3 class="help-section-title">Глосарій</h3>
 
@@ -386,6 +449,43 @@ function filtered() {
   font-size: 0.78rem;
   color: var(--text-secondary);
   margin-top: 1px;
+}
+
+/* === Help Text & Lists === */
+.help-text {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.55;
+}
+
+.help-text strong {
+  color: var(--text-primary);
+}
+
+.help-list {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.help-list__item {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  padding-left: 12px;
+  position: relative;
+}
+
+.help-list__item::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: var(--text-muted);
+}
+
+.help-list__item strong {
+  color: var(--text-primary);
 }
 
 /* === Search === */

@@ -1,6 +1,8 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useProgressStore } from '../stores/progress.js'
+import { findSupersetPairs } from '../data/superset-pairs.js'
+import { getWorkoutWarmups } from '../data/warmup-protocols.js'
 import ExerciseItem from './ExerciseItem.vue'
 
 const props = defineProps({
@@ -11,6 +13,7 @@ const props = defineProps({
 
 const store = useProgressStore()
 const open = ref(props.initialOpen)
+const showWarmup = ref(false)
 
 const skipKey = computed(() => `week-${props.weekId}-workout-${props.workout.id}`)
 const workoutSkipped = computed(() => store.isSkipped(skipKey.value))
@@ -31,6 +34,16 @@ const progress = computed(() => {
 })
 
 const isDone = computed(() => progress.value.total > 0 && progress.value.done === progress.value.total)
+
+// Superset hints
+const supersetHints = computed(() => {
+  return findSupersetPairs(props.workout.exercises || [])
+})
+
+// Warmup protocols for compound exercises
+const warmups = computed(() => {
+  return getWorkoutWarmups(props.workout.exercises)
+})
 
 const dayShort = {
   'Понеділок': 'Пн',
@@ -74,12 +87,31 @@ const dayIcons = {
       <div v-if="progress.total > 0" class="wcard__progress-bar">
         <div class="wcard__progress-fill" :style="{ width: progress.pct + '%' }"></div>
       </div>
-      <div v-if="workout.warmup" class="wcard__warmup">{{ workout.warmup }}</div>
+
+      <!-- General warmup -->
+      <div v-if="workout.warmup" class="wcard__warmup" @click="warmups.length > 0 && (showWarmup = !showWarmup)" :style="warmups.length > 0 ? 'cursor: pointer' : ''">
+        {{ workout.warmup }}
+        <span v-if="warmups.length > 0" class="wcard__warmup-toggle">
+          {{ showWarmup ? '▲ Сховати розминку' : '▼ Розминкові підходи' }}
+        </span>
+      </div>
+
+      <!-- Detailed warmup protocols -->
+      <div v-if="showWarmup && warmups.length > 0" class="wcard__warmup-detail">
+        <div class="warmup-exercise" v-for="w in warmups" :key="w.name">
+          <div class="warmup-exercise__name">{{ w.name }}</div>
+          <div class="warmup-exercise__steps">
+            <span v-for="(step, i) in w.steps" :key="i" class="warmup-step">{{ step }}</span>
+          </div>
+        </div>
+      </div>
+
       <ExerciseItem
         v-for="ex in workout.exercises"
         :key="ex.id"
         :exercise="ex"
         :exercise-key="`week-${weekId}-workout-${workout.id}-exercise-${ex.id}`"
+        :superset-hint="supersetHints.get(ex.id)"
       />
     </div>
   </div>

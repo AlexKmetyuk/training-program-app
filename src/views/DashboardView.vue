@@ -61,6 +61,18 @@ function goToCurrent() {
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted); flex-shrink:0;"><polyline points="9 18 15 12 9 6"/></svg>
     </div>
 
+    <!-- Test history shortcut -->
+    <div class="today-card" @click="router.push('/tests')" style="border-color: var(--warning);">
+      <div class="today-card__icon" style="color: var(--warning);">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+      </div>
+      <div class="today-card__info">
+        <div class="today-card__title">Історія тестів</div>
+        <div class="today-card__sub">Присід, тяга, жим — результати кожні 3 місяці</div>
+      </div>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted); flex-shrink:0;"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>
+
     <div class="dashboard-section" v-if="currentWeek && currentPhase">
       <div class="dashboard-section__title">Поточна фаза — {{ currentPhase.name }}</div>
       <div

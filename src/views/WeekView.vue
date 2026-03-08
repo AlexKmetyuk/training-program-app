@@ -29,6 +29,27 @@ function shouldOpen(workout) {
 
 const recommendation = computed(() => store.getRecommendation(weekId.value))
 
+const weightHint = computed(() => {
+  if (!week.value) return null
+  const rpe = week.value.rpeTarget
+  const name = week.value.name || ''
+  const isDeload = name.toLowerCase().includes('deload')
+
+  if (rpe === '7' && isDeload) {
+    return { icon: '🔄', text: 'Зменш вагу на ~40% від Т3. Легко, фокус на техніці та відновленні.' }
+  }
+  if (rpe === '7') {
+    return { icon: '🔍', text: 'Підбери вагу, з якою останній підхід — RPE 7 (3 повторення в запасі). Запиши ваги.' }
+  }
+  if (rpe === '8') {
+    return { icon: '📈', text: 'Підбери вагу під RPE 8 (2 в запасі). Зазвичай це +1-2.5 кг від минулого тижня для штанги.' }
+  }
+  if (rpe === '9') {
+    return { icon: '🔥', text: 'Підбери вагу під RPE 9 (1 в запасі). Це пік циклу — запиши ваги для порівняння!' }
+  }
+  return null
+})
+
 watch(weekId, async () => {
   await nextTick()
   window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -78,6 +99,12 @@ useSwipe(pageRef, { onLeft: goNextWeek, onRight: goPrevWeek })
 
     <div v-if="week.note" class="week-note">{{ week.note }}</div>
 
+    <!-- Weight progression hint -->
+    <div v-if="weightHint" class="weight-hint">
+      <span class="weight-hint__icon">{{ weightHint.icon }}</span>
+      <span class="weight-hint__text">{{ weightHint.text }}</span>
+    </div>
+
     <!-- Recommendation banner -->
     <div v-if="recommendation" :class="['week-recommendation', `week-recommendation--${recommendation.type}`]">
       {{ recommendation.text }}
@@ -112,5 +139,28 @@ useSwipe(pageRef, { onLeft: goNextWeek, onRight: goPrevWeek })
   border-radius: 8px;
   font-size: 0.8rem;
   font-weight: 600;
+}
+
+.weight-hint {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--accent-dim);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius-sm);
+  margin-bottom: 12px;
+}
+
+.weight-hint__icon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.weight-hint__text {
+  font-size: 0.83rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
 }
 </style>

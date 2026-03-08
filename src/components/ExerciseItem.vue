@@ -4,6 +4,7 @@ import { useProgressStore } from '../stores/progress.js'
 const props = defineProps({
   exercise: Object,
   exerciseKey: String,
+  supersetHint: { type: Object, default: null },
 })
 
 const store = useProgressStore()
@@ -33,6 +34,9 @@ function toggle() {
         <span v-if="exercise.category" :class="'category-badge category-badge--' + exercise.category">
           {{ exercise.category }}
         </span>
+        <span v-if="exercise.type" :class="'type-badge type-badge--' + exercise.type">
+          {{ exercise.type === 'compound' ? 'compound' : 'isolation' }}
+        </span>
       </div>
       <div v-if="exercise.nameEn" class="exercise-name-en">{{ exercise.nameEn }}</div>
       <div class="exercise-params">
@@ -41,6 +45,11 @@ function toggle() {
         <span v-if="exercise.rest" class="exercise-param">{{ exercise.rest }}</span>
       </div>
       <div v-if="exercise.notes" class="exercise-notes">{{ exercise.notes }}</div>
+      <div v-if="supersetHint" class="exercise-superset-hint">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 7h12l-4-4M16 17H4l4 4"/></svg>
+        Можна в суперсеті з: {{ supersetHint.partnerName }}
+        <span class="exercise-superset-hint__label">{{ supersetHint.label }}</span>
+      </div>
     </div>
   </div>
 </template>

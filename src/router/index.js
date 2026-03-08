@@ -4,11 +4,13 @@ import WeeksView from '../views/WeeksView.vue'
 import WeekView from '../views/WeekView.vue'
 import SettingsView from '../views/SettingsView.vue'
 import HelpView from '../views/HelpView.vue'
+import TestHistoryView from '../views/TestHistoryView.vue'
 
 const routes = [
   { path: '/', name: 'dashboard', component: DashboardView },
   { path: '/weeks', name: 'weeks', component: WeeksView },
   { path: '/week/:id', name: 'week', component: WeekView, props: true },
+  { path: '/tests', name: 'tests', component: TestHistoryView },
   { path: '/settings', name: 'settings', component: SettingsView },
   { path: '/help', name: 'help', component: HelpView },
 
