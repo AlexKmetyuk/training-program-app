@@ -1,8 +1,13 @@
 <script setup>
 import { ref, computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useProgressStore } from '../stores/progress.js'
 
+const route = useRoute()
+const router = useRouter()
 const store = useProgressStore()
+
+const fromWeek = computed(() => route.query.from ? parseInt(route.query.from) : null)
 
 const testWeeks = [
   { id: 11, month: 3, format: '3RM', label: 'M3 — Фундамент', color: '#6c8cff' },
@@ -82,6 +87,12 @@ function progressPct(liftKey, twIndex) {
 
 <template>
   <div>
+    <!-- Back to workout button -->
+    <button v-if="fromWeek" class="test-back-btn" @click="router.push(`/week/${fromWeek}`)">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      Назад до тижня {{ fromWeek }}
+    </button>
+
     <div class="test-hero">
       <div class="test-hero__title">Історія тестів</div>
       <div class="test-hero__sub">{{ filledTests }}/12 результатів записано</div>

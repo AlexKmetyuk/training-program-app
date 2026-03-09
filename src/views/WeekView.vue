@@ -29,6 +29,14 @@ function shouldOpen(workout) {
 
 const recommendation = computed(() => store.getRecommendation(weekId.value))
 
+const testWeekFormats = { 11: '3RM', 23: '3RM', 35: '2RM', 47: '1RM' }
+const testWeekInfo = computed(() => {
+  const contentId = store.getContentWeekId(weekId.value)
+  const format = testWeekFormats[contentId]
+  if (!format) return null
+  return { format }
+})
+
 const weightHint = computed(() => {
   if (!week.value) return null
   const rpe = week.value.rpeTarget
@@ -99,6 +107,15 @@ useSwipe(pageRef, { onLeft: goNextWeek, onRight: goPrevWeek })
 
     <div v-if="week.note" class="week-note">{{ week.note }}</div>
 
+    <!-- Test week banner -->
+    <div v-if="testWeekInfo" class="test-week-banner" @click="router.push({ path: '/tests', query: { from: weekId } })">
+      <div class="test-week-banner__info">
+        <span class="test-week-banner__badge">{{ testWeekInfo.format }}</span>
+        <span class="test-week-banner__text">Тестовий тиждень — запиши результати</span>
+      </div>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>
+
     <!-- Weight progression hint -->
     <div v-if="weightHint" class="weight-hint">
       <span class="weight-hint__icon">{{ weightHint.icon }}</span>
@@ -162,5 +179,45 @@ useSwipe(pageRef, { onLeft: goNextWeek, onRight: goPrevWeek })
   font-size: 0.83rem;
   color: var(--text-secondary);
   line-height: 1.5;
+}
+
+.test-week-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--warning-dim);
+  border: 1px solid var(--warning);
+  border-radius: var(--radius-sm);
+  margin-bottom: 12px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  color: var(--warning);
+}
+
+.test-week-banner:active {
+  opacity: 0.8;
+}
+
+.test-week-banner__info {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.test-week-banner__badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: var(--warning);
+  color: var(--bg-primary);
+  white-space: nowrap;
+}
+
+.test-week-banner__text {
+  font-size: 0.85rem;
+  font-weight: 600;
 }
 </style>

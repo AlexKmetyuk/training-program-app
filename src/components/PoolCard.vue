@@ -33,6 +33,9 @@ function toggle() {
         <div class="wcard__name">Басейн</div>
         <div class="wcard__meta">30-45 хв · {{ workout.note }}</div>
       </div>
+      <button v-if="!store.isCompleted(poolKey)" class="wcard__skip-btn" @click.stop="store.toggleSkip(skipKey)">
+        {{ poolSkipped ? 'Повернути' : 'Пропустити' }}
+      </button>
       <span v-if="poolSkipped" class="wcard__skipped-badge">ПРОПУЩЕНО</span>
       <label v-if="!poolSkipped" class="wcard__check" @click.stop>
         <input type="checkbox" :checked="store.isCompleted(poolKey)" @change="toggle" />
@@ -40,9 +43,6 @@ function toggle() {
           <svg class="wcard__check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
         </span>
       </label>
-      <button v-if="!store.isCompleted(poolKey)" class="wcard__skip-btn" @click.stop="store.toggleSkip(skipKey)">
-        {{ poolSkipped ? 'Повернути' : 'Пропустити' }}
-      </button>
     </div>
   </div>
 </template>

@@ -302,6 +302,17 @@ export const useProgressStore = defineStore('progress', () => {
     return { type: skipCount >= gymCount ? 'danger' : 'warning', text }
   }
 
+  function resetAll() {
+    completed.value = {}
+    skipped.value = {}
+    repeatWeeks.value = []
+    testResults.value = {}
+    localStorage.removeItem('training-progress')
+    localStorage.removeItem('training-skipped')
+    localStorage.removeItem('training-repeat-weeks')
+    localStorage.removeItem('training-test-results')
+  }
+
   function saveTestResult(key, data) {
     testResults.value[key] = data
   }
@@ -364,6 +375,7 @@ export const useProgressStore = defineStore('progress', () => {
     weekGymCount,
     weekSkipCount,
     getRecommendation,
+    resetAll,
     saveTestResult,
     currentPosition,
     weekProgress,

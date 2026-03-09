@@ -5,6 +5,12 @@ import BackupModal from '../components/BackupModal.vue'
 
 const store = useProgressStore()
 const showBackup = ref(false)
+const showResetConfirm = ref(false)
+
+function resetProgress() {
+  store.resetAll()
+  showResetConfirm.value = false
+}
 </script>
 
 <template>
@@ -47,6 +53,27 @@ const showBackup = ref(false)
         </div>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted); margin-left: auto;"><polyline points="9 18 15 12 9 6"/></svg>
       </button>
+
+      <button class="settings-action settings-action--danger" @click="showResetConfirm = true">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+        <div class="settings-action__info">
+          <div class="settings-action__name">Скинути прогрес</div>
+          <div class="settings-action__desc">Видалити всі відмітки, пропуски та результати тестів</div>
+        </div>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted); margin-left: auto;"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+
+    <!-- Reset confirmation -->
+    <div v-if="showResetConfirm" class="reset-overlay" @click.self="showResetConfirm = false">
+      <div class="reset-dialog">
+        <div class="reset-dialog__title">Скинути весь прогрес?</div>
+        <div class="reset-dialog__text">Це видалить усі відмітки вправ, пропущені тренування та результати тестів. Цю дію неможливо скасувати.</div>
+        <div class="reset-dialog__actions">
+          <button class="reset-btn reset-btn--cancel" @click="showResetConfirm = false">Скасувати</button>
+          <button class="reset-btn reset-btn--confirm" @click="resetProgress">Скинути</button>
+        </div>
+      </div>
     </div>
 
     <BackupModal v-if="showBackup" @close="showBackup = false" />
@@ -160,6 +187,7 @@ const showBackup = ref(false)
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   color: var(--text-primary);
+  text-align: left;
 }
 
 .settings-action:active {
@@ -179,5 +207,68 @@ const showBackup = ref(false)
   font-size: 0.8rem;
   color: var(--text-secondary);
   margin-top: 2px;
+}
+
+.settings-action--danger {
+  color: var(--danger);
+}
+
+.settings-action--danger .settings-action__desc {
+  color: var(--text-muted);
+}
+
+.reset-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.reset-dialog {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  max-width: 340px;
+  width: 100%;
+}
+
+.reset-dialog__title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.reset-dialog__text {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.reset-dialog__actions {
+  display: flex;
+  gap: 10px;
+}
+
+.reset-btn {
+  flex: 1;
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.reset-btn--cancel {
+  background: var(--bg-accent);
+  color: var(--text-primary);
+}
+
+.reset-btn--confirm {
+  background: var(--danger);
+  color: #fff;
 }
 </style>

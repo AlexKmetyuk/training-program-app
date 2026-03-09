@@ -54,14 +54,17 @@ function goToWeek(id) {
         <div
           v-for="item in group.weeks"
           :key="item.calendarId"
-          :class="['week-mini-card', { 'week-mini-card--current': item.calendarId === pos.week, 'week-mini-card--skipped': item.isSkipped }]"
+          :class="['week-mini-card', { 'week-mini-card--current': item.calendarId === pos.week, 'week-mini-card--skipped': item.isSkipped, 'week-mini-card--done': store.weekProgress(item.calendarId) === 100 && !item.isSkipped }]"
           @click="goToWeek(item.calendarId)"
         >
           <div
             class="week-mini-card__num"
-            :style="{ background: group.phase.color + '25', color: group.phase.color }"
+            :style="store.weekProgress(item.calendarId) === 100 && !item.isSkipped
+              ? { background: 'var(--success)', color: '#fff' }
+              : { background: group.phase.color + '25', color: group.phase.color }"
           >
-            {{ item.calendarId }}
+            <svg v-if="store.weekProgress(item.calendarId) === 100 && !item.isSkipped" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            <template v-else>{{ item.calendarId }}</template>
           </div>
           <div class="week-mini-card__info">
             <div class="week-mini-card__name">
@@ -138,6 +141,10 @@ function goToWeek(id) {
 .week-mini-card--current {
   border-color: var(--accent);
   box-shadow: 0 0 0 2px var(--accent-dim);
+}
+.week-mini-card--done {
+  opacity: 0.6;
+  border-color: var(--success);
 }
 .week-mini-card__num {
   width: 32px;

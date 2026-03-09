@@ -45,6 +45,21 @@ const warmups = computed(() => {
   return getWorkoutWarmups(props.workout.exercises)
 })
 
+function toggleAll() {
+  const exercises = props.workout.exercises || []
+  if (isDone.value) {
+    for (const ex of exercises) {
+      const key = `week-${props.weekId}-workout-${props.workout.id}-exercise-${ex.id}`
+      if (store.isCompleted(key)) store.toggle(key)
+    }
+  } else {
+    for (const ex of exercises) {
+      const key = `week-${props.weekId}-workout-${props.workout.id}-exercise-${ex.id}`
+      if (!store.isCompleted(key)) store.toggle(key)
+    }
+  }
+}
+
 const dayShort = {
   'Понеділок': 'Пн',
   'Середа': 'Ср',
@@ -71,16 +86,22 @@ const dayIcons = {
         <div class="wcard__name">{{ workout.name }}</div>
         <div class="wcard__meta">{{ workout.duration || '' }}</div>
       </div>
+      <button v-if="!isDone && !workoutSkipped" class="wcard__skip-btn" @click.stop="store.toggleSkip(skipKey)">
+        Пропустити
+      </button>
+      <button v-if="workoutSkipped" class="wcard__skip-btn" @click.stop="store.toggleSkip(skipKey)">
+        Повернути
+      </button>
       <div class="wcard__status">
         <span v-if="workoutSkipped" class="wcard__skipped-badge">ПРОПУЩЕНО</span>
-        <span v-else-if="isDone" class="wcard__done-badge">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-        </span>
-        <span v-else-if="progress.done > 0" class="wcard__count">{{ progress.done }}/{{ progress.total }}</span>
+        <span v-else-if="progress.done > 0 && !isDone" class="wcard__count">{{ progress.done }}/{{ progress.total }}</span>
       </div>
-      <button v-if="!isDone" class="wcard__skip-btn" @click.stop="store.toggleSkip(skipKey)">
-        {{ workoutSkipped ? 'Повернути' : 'Пропустити' }}
-      </button>
+      <label v-if="!workoutSkipped" class="wcard__check-all" @click.stop>
+        <input type="checkbox" :checked="isDone" @change="toggleAll" />
+        <span :class="['wcard__check-all-box', { 'wcard__check-all-box--done': isDone }]">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </span>
+      </label>
       <svg v-if="!workoutSkipped" :class="['wcard__chevron', { 'wcard__chevron--open': open }]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6" /></svg>
     </div>
     <div v-if="open && !workoutSkipped" class="wcard__body">
@@ -113,6 +134,7 @@ const dayIcons = {
         :exercise-key="`week-${weekId}-workout-${workout.id}-exercise-${ex.id}`"
         :superset-hint="supersetHints.get(ex.id)"
       />
+
     </div>
   </div>
 </template>

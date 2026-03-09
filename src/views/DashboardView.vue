@@ -73,27 +73,27 @@ function goToCurrent() {
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-muted); flex-shrink:0;"><polyline points="9 18 15 12 9 6"/></svg>
     </div>
 
-    <div class="dashboard-section" v-if="currentWeek && currentPhase">
-      <div class="dashboard-section__title">Поточна фаза — {{ currentPhase.name }}</div>
-      <div
-        class="month-mini-card month-mini-card--current"
-        @click="goToWeek(pos.week)"
-      >
-        <div
-          class="month-mini-card__num"
-          :style="{ background: currentWeek.phaseColor + '25', color: currentWeek.phaseColor }"
-        >
-          {{ pos.week }}
-        </div>
-        <div class="month-mini-card__info">
-          <div class="month-mini-card__name">Тиждень {{ pos.week }} — {{ currentWeek.name }}</div>
-          <div class="month-mini-card__phase">{{ currentWeek.phaseName }}</div>
-        </div>
-        <div class="month-mini-card__progress">
-          <ProgressBar :value="store.weekProgress(pos.week)" :color="currentWeek.phaseColor" />
-        </div>
-      </div>
-    </div>
+<!--    <div class="dashboard-section" v-if="currentWeek && currentPhase">-->
+<!--      <div class="dashboard-section__title">Поточна фаза — {{ currentPhase.name }}</div>-->
+<!--      <div-->
+<!--        class="month-mini-card month-mini-card&#45;&#45;current"-->
+<!--        @click="goToWeek(pos.week)"-->
+<!--      >-->
+<!--        <div-->
+<!--          class="month-mini-card__num"-->
+<!--          :style="{ background: currentWeek.phaseColor + '25', color: currentWeek.phaseColor }"-->
+<!--        >-->
+<!--          {{ pos.week }}-->
+<!--        </div>-->
+<!--        <div class="month-mini-card__info">-->
+<!--          <div class="month-mini-card__name">Тиждень {{ pos.week }} — {{ currentWeek.name }}</div>-->
+<!--          <div class="month-mini-card__phase">{{ currentWeek.phaseName }}</div>-->
+<!--        </div>-->
+<!--        <div class="month-mini-card__progress">-->
+<!--          <ProgressBar :value="store.weekProgress(pos.week)" :color="currentWeek.phaseColor" />-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
 
   </div>
 </template>
